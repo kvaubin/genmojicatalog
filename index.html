@@ -4,66 +4,7 @@
     <title>Genmoji Web Catalog</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Import Firebase modules -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
-        import { getFirestore, collection, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
-
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_ACTUAL_API_KEY",
-            authDomain: "YOUR_ACTUAL_AUTH_DOMAIN",
-            projectId: "YOUR_ACTUAL_PROJECT_ID",
-            storageBucket: "YOUR_ACTUAL_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_ACTUAL_MESSAGING_SENDER_ID",
-            appId: "YOUR_ACTUAL_APP_ID"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Listen for real-time updates
-        const q = query(collection(db, "genmoji"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
-            const container = document.getElementById("genmoji-container");
-            container.innerHTML = "";
-            
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const card = createGemojiCard(data);
-                container.appendChild(card);
-            });
-        });
-
-        function createGemojiCard(data) {
-            const card = document.createElement("div");
-            card.className = "genmoji-card";
-            
-            const content = data.imageData 
-                ? `<img src="data:image/png;base64,${data.imageData}" alt="${data.name}" class="genmoji-image">`
-                : `<div class="genmoji-text">${data.contentString}</div>`;
-            
-            card.innerHTML = `
-                <div class="genmoji-content">
-                    ${content}
-                </div>
-                <div class="genmoji-info">
-                    <h3>${data.name}</h3>
-                    <p class="creator">by ${data.creator}</p>
-                    <div class="stats">
-                        <span>❤️ ${data.likes}</span>
-                        <span>⭐️ ${data.votes}</span>
-                    </div>
-                </div>
-            `;
-            
-            return card;
-        }
-    </script>
-    
-    <!-- ... rest of the styles and HTML ... -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -76,5 +17,7 @@
             <!-- Genmojis will be inserted here -->
         </div>
     </div>
+    
+    <script type="module" src="app.js"></script>
 </body>
 </html>
