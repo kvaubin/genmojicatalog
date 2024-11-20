@@ -1,23 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Genmoji Web Catalog</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Genmoji Catalog</h1>
-            <p>Created with iOS app</p>
-        </div>
+<!-- Update the collection name in the Firebase query -->
+<script type="module">
+    // ... Firebase imports and config ...
+
+    try {
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        console.log("Firebase initialized successfully");
+
+        // Update collection name from "genmojis" to "genmoji"
+        const q = query(collection(db, "genmoji"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
+            const container = document.getElementById("genmoji-container");
+            container.innerHTML = "";
+            
+            console.log("Received snapshot with", snapshot.size, "documents");
+            
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="no-data">No Genmojis found. Create some in the iOS app!</p>';
+                return;
+            }
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                console.log("Document data:", data);
+                
+                const card = document.createElement("div");
+                card.className = "genmoji-card";
+                
+                const content = data.imageData 
+                    ? `<img src="data:image/png;base64,${data.imageData}" alt="${data.name}" class="genmoji-image">`
+                    : `<div class="genmoji-text">${data.contentString}</div>`;
+                
+                // ... rest of the card creation code ...
+            });
+        });
         
-        <div id="genmoji-container" class="genmoji-grid">
-            <!-- Genmojis will be inserted here -->
-        </div>
-    </div>
-    
-    <script type="module" src="app.js"></script>
-</body>
-</html>
+    } catch (error) {
+        console.error("Firebase initialization error:", error);
+        // ... error handling ...
+    }
+</script>
