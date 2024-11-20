@@ -4,24 +4,27 @@
     <title>Genmoji Catalog</title>
     <!-- Import Firebase modules -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
-        import { getFirestore, collection, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
+      // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-        // Replace this with your actual Firebase config from your Firebase Console
-        const firebaseConfig = {
-            apiKey: "AIzaSyDOCAbC123dEf456GhI789jKl012-MnO",
-            authDomain: "myapp-project-123.firebaseapp.com",
-            projectId: "myapp-project-123",
-            storageBucket: "myapp-project-123.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abc123def456"
-        };
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBK8TNrlO-VGe1zWtg4xG8xTpRtTM7BhR8",
+  authDomain: "genmojicatalog-8c3f0.firebaseapp.com",
+  projectId: "genmojicatalog-8c3f0",
+  storageBucket: "genmojicatalog-8c3f0.firebasestorage.app",
+  messagingSenderId: "122213598911",
+  appId: "1:122213598911:web:30c6a3e226d01e29a1280a",
+  measurementId: "G-X7N0L92PTR"
+};
 
-        try {
-            // Initialize Firebase with error handling
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            console.log("Firebase initialized successfully");
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
             // Listen for real-time updates
             const q = query(collection(db, "genmojis"), orderBy("createdAt", "desc"));
