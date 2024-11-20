@@ -42,13 +42,34 @@ h1 {
     margin: 0;
 }
 
+/* Update the theme toggle styles */
 .theme-toggle {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.theme-toggle button {
     background: none;
     border: none;
-    font-size: 24px;
+    color: var(--system-blue);
+    font-size: 22px;
     padding: 8px;
     cursor: pointer;
-    color: var(--system-label);
+    transition: transform 0.2s ease;
+}
+
+.theme-toggle button:hover {
+    transform: scale(1.1);
+}
+
+.theme-toggle i {
+    color: var(--system-blue);
+}
+
+[data-theme="dark"] .theme-toggle i.fa-sun {
+    color: #ffd60a;
 }
 
 .catalog-grid {
