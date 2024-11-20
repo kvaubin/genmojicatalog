@@ -1,27 +1,28 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
 import { getFirestore, collection, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
 
-// Your Firebase configuration
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "YOUR_ACTUAL_API_KEY",
-    authDomain: "YOUR_ACTUAL_AUTH_DOMAIN",
-    projectId: "YOUR_ACTUAL_PROJECT_ID",
-    storageBucket: "YOUR_ACTUAL_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_ACTUAL_MESSAGING_SENDER_ID",
-    appId: "YOUR_ACTUAL_APP_ID"
+  apiKey: "AIzaSyBK8TNrlO-VGe1zWtg4xG8xTpRtTM7BhR8",
+  authDomain: "genmojicatalog-8c3f0.firebaseapp.com",
+  projectId: "genmojicatalog-8c3f0",
+  storageBucket: "genmojicatalog-8c3f0.firebasestorage.app",
+  messagingSenderId: "122213598911",
+  appId: "1:122213598911:web:d2985df148f1f743a1280a",
+  measurementId: "G-HY13S040RL"
 };
 
-try {
-    // Initialize Firebase with error handling
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    console.log("Firebase initialized successfully");
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
-    // Listen for real-time updates
-    const q = query(collection(db, "genmoji"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (snapshot) => {
-        const container = document.getElementById("genmoji-container");
-        container.innerHTML = "";
         
         if (snapshot.empty) {
             container.innerHTML = '<p class="no-data">No Genmojis found. Create some in the iOS app!</p>';
