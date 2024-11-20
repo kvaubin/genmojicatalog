@@ -1,58 +1,24 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const catalogGrid = document.getElementById('catalog-grid');
-    const themeToggle = document.getElementById('themeToggle');
+// Add this to your existing app.js
+function syncWithApp(gemojiData) {
+    // Update local storage
+    localStorage.setItem('gemojiItems', JSON.stringify(gemojiData));
     
-    // Theme toggle functionality
-    function updateThemeIcon(isDark) {
-        themeToggle.querySelector('.icon').textContent = isDark ? '☀️' : '🌙';
-    }
-    
-    themeToggle.addEventListener('click', () => {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        if (isDark) {
-            document.documentElement.removeAttribute('data-theme');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
-        updateThemeIcon(!isDark);
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    // Update display
+    updateCatalog();
+}
+
+// Add an API endpoint to receive updates
+if (window.location.pathname.includes('/api/sync')) {
+    addEventListener('fetch', event => {
+        event.respondWith(handleSync(event.request));
     });
-    
-    // Load saved theme
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        updateThemeIcon(true);
+}
+
+async function handleSync(request) {
+    if (request.method === 'POST') {
+        const gemojiData = await request.json();
+        syncWithApp(gemojiData);
+        return new Response('Sync successful', { status: 200 });
     }
-    
-    // Function to create a Genmoji item
-    function createGemojiItem(item) {
-        const div = document.createElement('div');
-        div.className = 'catalog-item';
-        div.innerHTML = `
-            <div class="emoji">${item.emoji}</div>
-            <h2 class="title">${item.title}</h2>
-            <p class="description">${item.description}</p>
-        `;
-        return div;
-    }
-    
-    // Function to load Genmoji items
-    async function loadGemojiItems() {
-        // Replace this with your actual data source
-        const items = [
-            { emoji: '🌟', title: 'Star', description: 'A shining star genmoji' },
-            { emoji: '🎨', title: 'Art', description: 'Artist palette genmoji' },
-            { emoji: '🎮', title: 'Game', description: 'Gaming controller genmoji' },
-            // Add more items as they're added to your app
-        ];
-        
-        catalogGrid.innerHTML = '';
-        items.forEach(item => {
-            catalogGrid.appendChild(createGemojiItem(item));
-        });
-    }
-    
-    // Initial load
-    loadGemojiItems();
-});
+    return new Response('Method not allowed', { status: 405 });
+}
