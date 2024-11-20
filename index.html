@@ -1,135 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Genmoji Catalog</title>
+    <title>Genmoji Web Catalog</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <!-- Import Firebase modules -->
     <script type="module">
-      // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
+        import { getFirestore, collection, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBK8TNrlO-VGe1zWtg4xG8xTpRtTM7BhR8",
-  authDomain: "genmojicatalog-8c3f0.firebaseapp.com",
-  projectId: "genmojicatalog-8c3f0",
-  storageBucket: "genmojicatalog-8c3f0.firebasestorage.app",
-  messagingSenderId: "122213598911",
-  appId: "1:122213598911:web:30c6a3e226d01e29a1280a",
-  measurementId: "G-X7N0L92PTR"
-};
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_ACTUAL_API_KEY",
+            authDomain: "YOUR_ACTUAL_AUTH_DOMAIN",
+            projectId: "YOUR_ACTUAL_PROJECT_ID",
+            storageBucket: "YOUR_ACTUAL_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_ACTUAL_MESSAGING_SENDER_ID",
+            appId: "YOUR_ACTUAL_APP_ID"
+        };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-            // Listen for real-time updates
-            const q = query(collection(db, "genmojis"), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const container = document.getElementById("genmoji-container");
-                container.innerHTML = "";
-                
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="no-data">No Genmojis found. Create some in the iOS app!</p>';
-                    return;
-                }
-                
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    console.log("Received genmoji:", data); // Debug log
-                    
-                    const date = data.createdAt?.toDate();
-                    const timeAgo = date ? getTimeAgo(date) : '';
-                    
-                    const card = document.createElement("div");
-                    card.className = "genmoji-card";
-                    
-                    card.innerHTML = `
-                        <div class="emoji">${data.contentString || '😊'}</div>
-                        <div class="info">
-                            <h3>${data.name || 'Unnamed Genmoji'}</h3>
-                            <p class="creator">by ${data.creator || 'Anonymous'}</p>
-                            <div class="stats">
-                                <span class="likes">❤️ ${data.likes || 0}</span>
-                                <span class="votes">⭐️ ${data.votes || 0}</span>
-                            </div>
-                            <p class="time">${timeAgo}</p>
-                        </div>
-                    `;
-                    
-                    container.appendChild(card);
-                });
-            }, (error) => {
-                console.error("Error listening to Firestore:", error);
-                const container = document.getElementById("genmoji-container");
-                container.innerHTML = '<p class="error">Error loading Genmojis. Please try again later.</p>';
-            });
-
-        } catch (error) {
-            console.error("Error initializing Firebase:", error);
+        // Listen for real-time updates
+        const q = query(collection(db, "genmoji"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snapshot) => {
             const container = document.getElementById("genmoji-container");
-            container.innerHTML = '<p class="error">Error connecting to Firebase. Please check your configuration.</p>';
-        }
+            container.innerHTML = "";
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const card = createGemojiCard(data);
+                container.appendChild(card);
+            });
+        });
 
-        function getTimeAgo(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
+        function createGemojiCard(data) {
+            const card = document.createElement("div");
+            card.className = "genmoji-card";
             
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + " years ago";
+            const content = data.imageData 
+                ? `<img src="data:image/png;base64,${data.imageData}" alt="${data.name}" class="genmoji-image">`
+                : `<div class="genmoji-text">${data.contentString}</div>`;
             
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + " months ago";
+            card.innerHTML = `
+                <div class="genmoji-content">
+                    ${content}
+                </div>
+                <div class="genmoji-info">
+                    <h3>${data.name}</h3>
+                    <p class="creator">by ${data.creator}</p>
+                    <div class="stats">
+                        <span>❤️ ${data.likes}</span>
+                        <span>⭐️ ${data.votes}</span>
+                    </div>
+                </div>
+            `;
             
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + " days ago";
-            
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " hours ago";
-            
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " minutes ago";
-            
-            return Math.floor(seconds) + " seconds ago";
+            return card;
         }
     </script>
-    <style>
-        /* ... existing styles ... */
-        
-        .error, .no-data {
-            text-align: center;
-            color: var(--text-secondary);
-            padding: 20px;
-            background: var(--card-background);
-            border-radius: 12px;
-            margin: 20px;
-        }
-        
-        /* Add loading animation */
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-        
-        .loading {
-            animation: pulse 1.5s infinite;
-        }
-    </style>
+    
+    <!-- ... rest of the styles and HTML ... -->
 </head>
 <body>
-    <div id="app">
-        <h1>Genmoji Catalog</h1>
-        <div class="genmoji-grid" id="genmoji-container">
-            <p class="loading">Loading Genmojis...</p>
+    <div class="container">
+        <div class="header">
+            <h1>Genmoji Catalog</h1>
+            <p>Created with iOS app</p>
+        </div>
+        
+        <div id="genmoji-container" class="genmoji-grid">
+            <!-- Genmojis will be inserted here -->
         </div>
     </div>
-    
-    <!-- Add console output for debugging -->
-    <script>
-        console.log("Page loaded");
-    </script>
 </body>
 </html>
